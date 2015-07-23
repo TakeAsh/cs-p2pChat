@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "p2pChat", "p2pChat\p2pChat.csproj", "{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TakeAshUtility", "..\cs-TakeAshUtility\TakeAshUtility\TakeAshUtility.csproj", "{26A4A55A-CA4E-455C-8C14-832A73E23DFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Debug|x64.ActiveCfg = Debug|x64
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Debug|x64.Build.0 = Debug|x64
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Debug|x86.ActiveCfg = Debug|x86
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Debug|x86.Build.0 = Debug|x86
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Release|x64.ActiveCfg = Release|x64
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Release|x64.Build.0 = Release|x64
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Release|x86.ActiveCfg = Release|x86
+		{ECF85C7A-FC5E-4622-AD97-A2799B5F5279}.Release|x86.Build.0 = Release|x86
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Debug|x64.ActiveCfg = Debug|x64
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Debug|x64.Build.0 = Debug|x64
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Debug|x86.ActiveCfg = Debug|x86
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Debug|x86.Build.0 = Debug|x86
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Release|x64.ActiveCfg = Release|x64
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Release|x64.Build.0 = Release|x64
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Release|x86.ActiveCfg = Release|x86
+		{26A4A55A-CA4E-455C-8C14-832A73E23DFE}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
