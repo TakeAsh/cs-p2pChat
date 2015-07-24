@@ -31,6 +31,8 @@ namespace p2pChat {
         public MainWindow() {
             InitializeComponent();
             textBox_Host.Text = _settings.Host;
+            group_Config.Visibility = Visibility.Collapsed;
+            textBox_Port.Text = _settings.Port.ToString();
             textBox_Name.Text = Dns.GetHostName();
             _listener = new Listener(textBlock_Log);
         }
@@ -68,6 +70,16 @@ namespace p2pChat {
             button_Connect.IsEnabled = true;
             button_Disconnect.IsEnabled = false;
             button_Send.IsEnabled = false;
+        }
+
+        private void button_Config_Click(object sender, RoutedEventArgs e) {
+            if (group_Config.Visibility == Visibility.Collapsed) {
+                group_Config.Visibility = Visibility.Visible;
+            } else {
+                group_Config.Visibility = Visibility.Collapsed;
+                _settings.Port = textBox_Port.Text.TryParse(_settings.Port);
+                _settings.Save();
+            }
         }
 
         private void button_Send_Click(object sender, RoutedEventArgs e) {

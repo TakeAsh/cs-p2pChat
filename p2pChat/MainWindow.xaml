@@ -22,10 +22,36 @@
                     Content="Disconnect"
                     IsEnabled="False"
                     Click="button_Disconnect_Click" />
+                <Button
+                    x:Name="button_Config"
+                    Content="Config"
+                    Click="button_Config_Click" />
             </StackPanel>
             <TextBox
                 x:Name="textBox_Host" />
         </DockPanel>
+        <GroupBox
+            x:Name="group_Config"
+            Header="Config"
+            DockPanel.Dock="Top" Visibility="Visible">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Text="Listening Port"
+                    Grid.Row="0" Grid.Column="0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="4" />
+                <TextBox
+                    x:Name="textBox_Port"
+                    Grid.Row="0" Grid.Column="1" />
+            </Grid>
+        </GroupBox>
         <DockPanel
             DockPanel.Dock="Bottom">
             <TextBox
