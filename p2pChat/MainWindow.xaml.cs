@@ -28,13 +28,7 @@ namespace p2pChat {
 
         public MainWindow() {
             InitializeComponent();
-            /*
-            IPAddress serverAddress;
-            if (!IPAddress.TryParse(_settings.Host, out serverAddress)) {
-                textBlock_Status.Text = "Invalid Host";
-                return;
-            }
-            */
+            textBox_Host.Text = _settings.Host;
             _listener = new Listener(textBlock_Log);
             _listener.Start();
         }
