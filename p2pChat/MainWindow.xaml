@@ -2,7 +2,7 @@
     x:Class="p2pChat.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    Title="MainWindow"
+    Title="p2p Chat"
     Height="350" Width="525"
     FontFamily="Noto Sans JP"
     Closing="Window_Closing">
@@ -24,8 +24,9 @@
                 x:Name="textBlock_Status"
                 TextWrapping="Wrap" />
         </DockPanel>
-        <TextBlock
+        <TextBox
             x:Name="textBlock_Log"
-            TextWrapping="Wrap" />
+            TextWrapping="Wrap"
+            IsReadOnly="True" />
     </DockPanel>
 </Window>
