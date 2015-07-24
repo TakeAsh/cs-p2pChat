@@ -15,11 +15,13 @@
                 Orientation="Horizontal">
                 <Button
                     x:Name="button_Connect"
-                    Content="Connect" />
+                    Content="Connect"
+                    Click="button_Connect_Click" />
                 <Button
                     x:Name="button_Disconnect"
                     Content="Disconnect"
-                    IsEnabled="False" />
+                    IsEnabled="False"
+                    Click="button_Disconnect_Click" />
             </StackPanel>
             <TextBox
                 x:Name="textBox_Host" />
@@ -32,7 +34,10 @@
             <Button
                 x:Name="button_Send"
                 Content="Send"
-                DockPanel.Dock="Right"/>
+                DockPanel.Dock="Right"
+                IsDefault="True"
+                IsEnabled="False"
+                Click="button_Send_Click" />
             <TextBox
                 x:Name="textBox_Message" />
         </DockPanel>

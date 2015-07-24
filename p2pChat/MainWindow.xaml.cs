@@ -25,6 +25,7 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private Listener _listener;
+        private Talker _talker;
 
         public MainWindow() {
             InitializeComponent();
@@ -37,6 +38,29 @@ namespace p2pChat {
             if (_listener.IsBusy) {
                 _listener.Stop();
             }
+        }
+
+        private void button_Connect_Click(object sender, RoutedEventArgs e) {
+            _talker = new Talker(_settings.Host, textBlock_Log);
+            button_Connect.IsEnabled = false;
+            button_Disconnect.IsEnabled = true;
+            button_Send.IsEnabled = true;
+        }
+
+        private void button_Disconnect_Click(object sender, RoutedEventArgs e) {
+            _talker.Dispose();
+            _talker = null;
+            button_Connect.IsEnabled = true;
+            button_Disconnect.IsEnabled = false;
+            button_Send.IsEnabled = false;
+        }
+
+        private void button_Send_Click(object sender, RoutedEventArgs e) {
+            if (_talker == null) {
+                return;
+            }
+            _talker.Talk(textBox_Name.Text + "\t" + textBox_Message.Text);
+            textBox_Message.Text = null;
         }
     }
 }
