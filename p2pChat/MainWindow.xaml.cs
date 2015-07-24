@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,6 +31,7 @@ namespace p2pChat {
         public MainWindow() {
             InitializeComponent();
             textBox_Host.Text = _settings.Host;
+            textBox_Name.Text = Dns.GetHostName();
             _listener = new Listener(textBlock_Log);
         }
 
