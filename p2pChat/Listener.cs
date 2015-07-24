@@ -22,12 +22,12 @@ namespace p2pChat {
 
         private bool disposed = false;
         private TextBox _log;
-        private TcpListener _listener;
+        private TcpListenerEx _listener;
         private BackgroundWorker _worker;
 
         public Listener(TextBox log) {
             _log = log;
-            _listener = new TcpListener(IPAddress.IPv6Any, _settings.Port);
+            _listener = new TcpListenerEx(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
             _listener.Start();
             _worker = CreateWorker();
@@ -44,7 +44,7 @@ namespace p2pChat {
             };
             worker.DoWork += (sender, e) => {
                 while (true) {
-                    if (e.Cancel) {
+                    if (e.Cancel || !_listener.Active) {
                         break;
                     }
                     if (_listener.Pending()) {
