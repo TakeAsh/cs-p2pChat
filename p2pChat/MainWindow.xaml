@@ -9,20 +9,15 @@
 
     <DockPanel>
         <DockPanel DockPanel.Dock="Bottom">
-            <DockPanel DockPanel.Dock="Top">
-                <TextBox
-                    x:Name="textBox_Name"
-                    Text="NoName" />
-                <Button
-                    x:Name="button_Send"
-                    Content="Send"
-                    DockPanel.Dock="Right"/>
-                <TextBox
-                    x:Name="textBox_Message" />
-            </DockPanel>
-            <TextBlock
-                x:Name="textBlock_Status"
-                TextWrapping="Wrap" />
+            <TextBox
+                x:Name="textBox_Name"
+                Text="NoName" />
+            <Button
+                x:Name="button_Send"
+                Content="Send"
+                DockPanel.Dock="Right"/>
+            <TextBox
+                x:Name="textBox_Message" />
         </DockPanel>
         <TextBox
             x:Name="textBlock_Log"
