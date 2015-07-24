@@ -8,7 +8,24 @@
     Closing="Window_Closing">
 
     <DockPanel>
-        <DockPanel DockPanel.Dock="Bottom">
+        <DockPanel
+            DockPanel.Dock="Top">
+            <StackPanel
+                DockPanel.Dock="Right"
+                Orientation="Horizontal">
+                <Button
+                    x:Name="button_Connect"
+                    Content="Connect" />
+                <Button
+                    x:Name="button_Disconnect"
+                    Content="Disconnect"
+                    IsEnabled="False" />
+            </StackPanel>
+            <TextBox
+                x:Name="textBox_Host" />
+        </DockPanel>
+        <DockPanel
+            DockPanel.Dock="Bottom">
             <TextBox
                 x:Name="textBox_Name"
                 Text="NoName" />
