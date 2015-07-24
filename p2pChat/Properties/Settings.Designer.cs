@@ -58,5 +58,17 @@ namespace p2pChat.Properties {
                 this["NetworkTimeout"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MyName {
+            get {
+                return ((string)(this["MyName"]));
+            }
+            set {
+                this["MyName"] = value;
+            }
+        }
     }
 }

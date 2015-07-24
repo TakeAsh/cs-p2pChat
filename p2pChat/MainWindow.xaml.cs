@@ -33,7 +33,7 @@ namespace p2pChat {
             textBox_Host.Text = _settings.Host;
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
-            textBox_Name.Text = Dns.GetHostName();
+            textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
             _listener = new Listener(textBlock_Log);
         }
 
@@ -83,11 +83,15 @@ namespace p2pChat {
         }
 
         private void button_Send_Click(object sender, RoutedEventArgs e) {
-            if (_talker == null) {
+            if (_talker == null ||
+                String.IsNullOrEmpty(textBox_Name.Text) ||
+                String.IsNullOrEmpty(textBox_Message.Text)) {
                 return;
             }
             _talker.Talk(textBox_Name.Text + "\t" + textBox_Message.Text);
             textBox_Message.Text = null;
+            _settings.MyName = textBox_Name.Text;
+            _settings.Save();
         }
     }
 }
