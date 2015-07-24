@@ -72,6 +72,10 @@ namespace p2pChat {
             return worker;
         }
 
+        private void ShowMessage(string message) {
+            _worker.ReportProgress(0, message);
+        }
+
         private void HandleClient() {
             using (var client = _listener.AcceptTcpClient())
             using (var ns = client.GetStream()) {
@@ -83,7 +87,7 @@ namespace p2pChat {
                 var clientAddress = endPoint != null ?
                     endPoint.Address.ToString() + ":" + endPoint.Port.ToString() :
                     null;
-                _worker.ReportProgress(0, "Connected: " + clientAddress);
+                ShowMessage("Connected: " + clientAddress);
                 try {
                     var isDisconnected = false;
                     while (!isDisconnected) {
@@ -104,7 +108,7 @@ namespace p2pChat {
                                 Encoding.UTF8
                                     .GetString(ms.GetBuffer(), 0, (int)ms.Length);
                         }
-                        _worker.ReportProgress(0, message.Trim(WhiteSpaces));
+                        ShowMessage(message.Trim(WhiteSpaces));
                         if (!isDisconnected) {
                             var response = "Received: " + message.Length.ToString() + "\r\n\0";
                             var sendBuffer = Encoding.UTF8.GetBytes(response);
@@ -115,10 +119,10 @@ namespace p2pChat {
                 }
                 catch (Exception ex) {
                     var socketException = ex.InnerException as SocketException;
-                    var message = socketException != null && socketException.ErrorCode == (int)SocketError.TimedOut ?
-                        "Timeout: " + clientAddress :
-                        ex.GetAllMessages();
-                    _worker.ReportProgress(0, message);
+                    var message = socketException == null ?
+                        ex.GetAllMessages() :
+                        ((SocketError)socketException.ErrorCode).ToString() + ": " + clientAddress;
+                    ShowMessage(message);
                 }
             }
         }
