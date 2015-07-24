@@ -32,6 +32,10 @@ namespace p2pChat {
             _log = log;
             _client = new TcpClient(_host, _settings.Port);
             _ns = _client.GetStream();
+            if (_ns.CanTimeout) {
+                _ns.ReadTimeout = _settings.NetworkTimeout * 1000;
+                _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
+            }
             _worker = CreateWorker();
         }
 
