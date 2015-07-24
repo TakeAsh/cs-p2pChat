@@ -22,15 +22,17 @@ namespace p2pChat {
 
         private bool disposed = false;
         private string _host;
+        private int _port;
         private TextBox _log;
         private TcpClient _client;
         private NetworkStream _ns;
         private BackgroundWorker _worker;
 
-        public Talker(string host, TextBox log) {
+        public Talker(string host, int port, TextBox log) {
             _host = host;
+            _port = port;
             _log = log;
-            _client = new TcpClient(_host, _settings.Port);
+            _client = new TcpClient(_host, _port);
             _ns = _client.GetStream();
             if (_ns.CanTimeout) {
                 _ns.ReadTimeout = _settings.NetworkTimeout * 1000;
