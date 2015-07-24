@@ -40,10 +40,24 @@ namespace p2pChat {
         }
 
         private void button_Connect_Click(object sender, RoutedEventArgs e) {
-            _talker = new Talker(_settings.Host, textBlock_Log);
-            button_Connect.IsEnabled = false;
-            button_Disconnect.IsEnabled = true;
-            button_Send.IsEnabled = true;
+            try {
+                var uri = ("tcp://" + textBox_Host.Text).TryParse<Uri>();
+                var host = !String.IsNullOrEmpty(uri.Host) ?
+                    uri.Host :
+                    textBox_Host.Text;
+                var port = uri.Port > 0 ?
+                    uri.Port :
+                    _settings.Port;
+                _talker = new Talker(host, port, textBlock_Log);
+                _settings.Host = textBox_Host.Text;
+                _settings.Save();
+                button_Connect.IsEnabled = false;
+                button_Disconnect.IsEnabled = true;
+                button_Send.IsEnabled = true;
+            }
+            catch (Exception ex) {
+                textBlock_Log.Text += ex.GetAllMessages() + "\n";
+            }
         }
 
         private void button_Disconnect_Click(object sender, RoutedEventArgs e) {
