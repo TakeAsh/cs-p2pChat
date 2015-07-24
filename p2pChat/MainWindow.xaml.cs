@@ -35,7 +35,7 @@ namespace p2pChat {
                 return;
             }
             */
-            _listener = new Listener(_settings.Port, textBlock_Log);
+            _listener = new Listener(textBlock_Log);
             _listener.Start();
         }
 

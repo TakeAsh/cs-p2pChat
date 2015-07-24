@@ -18,13 +18,11 @@ namespace p2pChat {
 
         private static Properties.Settings _settings = Properties.Settings.Default;
 
-        private int _port;
         private TextBox _log;
         private TcpListener _listener;
         private BackgroundWorker _worker;
 
-        public Listener(int port, TextBox log) {
-            _port = port;
+        public Listener(TextBox log) {
             _log = log;
             _listener = new TcpListener(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
