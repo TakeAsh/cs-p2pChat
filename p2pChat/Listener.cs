@@ -12,13 +12,15 @@ using TakeAshUtility;
 
 namespace p2pChat {
 
-    public class Listener {
+    public class Listener :
+        IDisposable {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
 
         private static Properties.Settings _settings = Properties.Settings.Default;
 
+        private bool disposed = false;
         private TextBox _log;
         private TcpListener _listener;
         private BackgroundWorker _worker;
@@ -27,19 +29,12 @@ namespace p2pChat {
             _log = log;
             _listener = new TcpListener(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
+            _listener.Start();
             _worker = CreateWorker();
         }
 
         public bool IsBusy {
             get { return _worker != null && _worker.IsBusy; }
-        }
-
-        public void Start() {
-            _worker.RunWorkerAsync();
-        }
-
-        public void Stop() {
-            _worker.CancelAsync();
         }
 
         private BackgroundWorker CreateWorker() {
@@ -48,7 +43,6 @@ namespace p2pChat {
                 WorkerSupportsCancellation = true,
             };
             worker.DoWork += (sender, e) => {
-                _listener.Start();
                 while (true) {
                     if (e.Cancel) {
                         break;
@@ -67,8 +61,8 @@ namespace p2pChat {
                 _log.Text += message + "\n";
             };
             worker.RunWorkerCompleted += (sender, e) => {
-                _listener.Stop();
             };
+            worker.RunWorkerAsync();
             return worker;
         }
 
@@ -94,9 +88,8 @@ namespace p2pChat {
                         var message = "";
                         using (var ms = new MemoryStream()) {
                             var receiveBuffer = new byte[BufferSize];
-                            var receiveSize = 0;
                             do {
-                                receiveSize = ns.Read(receiveBuffer, 0, receiveBuffer.Length);
+                                var receiveSize = ns.Read(receiveBuffer, 0, receiveBuffer.Length);
                                 if (receiveSize == 0) {
                                     isDisconnected = true;
                                     break;
@@ -126,5 +119,31 @@ namespace p2pChat {
                 }
             }
         }
+
+        #region IDisposable
+        
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (disposed) {
+                return;
+            }
+            if (disposing) {
+                // Free any other managed objects here.
+                _worker.CancelAsync();
+                _listener.Stop();
+            }
+            // Free any unmanaged objects here.
+            disposed = true;
+        }
+
+        ~Listener() {
+            Dispose(false);
+        }
+
+        #endregion
     }
 }

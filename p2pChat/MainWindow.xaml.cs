@@ -31,12 +31,11 @@ namespace p2pChat {
             InitializeComponent();
             textBox_Host.Text = _settings.Host;
             _listener = new Listener(textBlock_Log);
-            _listener.Start();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e) {
             if (_listener.IsBusy) {
-                _listener.Stop();
+                _listener.Dispose();
             }
         }
 
