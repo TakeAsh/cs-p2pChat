@@ -63,7 +63,7 @@ namespace p2pChat {
                         break;
                     }
                     if (_listener.Pending()) {
-                        HandleClient();
+                        ThreadPool.QueueUserWorkItem(HandleClient);
                     }
                     Thread.Sleep(100);
                 }
@@ -81,10 +81,13 @@ namespace p2pChat {
         }
 
         private void ShowMessage(string message) {
+            if (!_worker.IsBusy) {
+                return;
+            }
             _worker.ReportProgress(0, message);
         }
 
-        private void HandleClient() {
+        private void HandleClient(Object state) {
             using (var client = _listener.AcceptTcpClient())
             using (var ns = client.GetStream()) {
                 if (ns.CanTimeout) {
@@ -114,10 +117,10 @@ namespace p2pChat {
                                 }
                                 ms.Write(receiveBuffer, 0, receiveSize);
                             } while (ns.DataAvailable);
-                            message = isDisconnected ?
-                                "Disconnected: " + clientAddress :
-                                Encoding.UTF8
+                            if (!isDisconnected) {
+                                message = Encoding.UTF8
                                     .GetString(ms.GetBuffer(), 0, (int)ms.Length);
+                            }
                         }
                         ShowMessage(message.Trim(WhiteSpaces));
                         if (!isDisconnected) {
@@ -135,6 +138,7 @@ namespace p2pChat {
                         ((SocketError)socketException.ErrorCode).ToString() + ": " + clientAddress;
                     ShowMessage(message);
                 }
+                ShowMessage("Disconnected: " + clientAddress);
             }
         }
 
