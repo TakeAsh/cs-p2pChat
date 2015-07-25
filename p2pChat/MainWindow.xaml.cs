@@ -42,8 +42,13 @@ namespace p2pChat {
                 _listener.Stop();
                 image_ListenStatus.Source = ResourceHelper.GetImage("Images/Wait.png");
             } else {
-                _listener.Start();
-                image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
+                try {
+                    _listener.Start();
+                    image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
+                }
+                catch (Exception ex) {
+                    textBlock_Log.Text += ex.GetAllMessages() + "\n";
+                }
             }
         }
 
