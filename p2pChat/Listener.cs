@@ -29,12 +29,27 @@ namespace p2pChat {
             _log = log;
             _listener = new TcpListenerEx(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
-            _listener.Start();
             _worker = CreateWorker();
         }
 
         public bool IsBusy {
-            get { return _worker != null && _worker.IsBusy; }
+            get { return _listener.Active; }
+        }
+
+        public void Start() {
+            if (_listener.Active) {
+                return;
+            }
+            _listener.Start();
+            _worker.RunWorkerAsync();
+        }
+
+        public void Stop() {
+            if (!_listener.Active) {
+                return;
+            }
+            _worker.CancelAsync();
+            _listener.Stop();
         }
 
         private BackgroundWorker CreateWorker() {
@@ -62,7 +77,6 @@ namespace p2pChat {
             };
             worker.RunWorkerCompleted += (sender, e) => {
             };
-            worker.RunWorkerAsync();
             return worker;
         }
 
@@ -84,7 +98,11 @@ namespace p2pChat {
                 ShowMessage("Connected: " + clientAddress);
                 try {
                     var isDisconnected = false;
-                    while (!isDisconnected) {
+                    while (!isDisconnected && _listener.Active) {
+                        if (!ns.DataAvailable) {
+                            Thread.Sleep(100);
+                            continue;
+                        }
                         var message = "";
                         using (var ms = new MemoryStream()) {
                             var receiveBuffer = new byte[BufferSize];
@@ -121,7 +139,7 @@ namespace p2pChat {
         }
 
         #region IDisposable
-        
+
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
