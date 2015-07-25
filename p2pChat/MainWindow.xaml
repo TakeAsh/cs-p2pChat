@@ -23,6 +23,17 @@
                     IsEnabled="False"
                     Click="button_Disconnect_Click" />
                 <Button
+                    x:Name="button_ListenStatus"
+                    ToolTip="Listening Status"
+                    Click="button_ListeningStatus_Click">
+                    <Image
+                        x:Name="image_ListenStatus"
+                        Width="{x:Static SystemParameters.SmallIconWidth}"
+                        Height="{x:Static SystemParameters.SmallIconHeight}"
+                        Source="/p2pChat;component/Images/Wait.png">
+                    </Image>
+                </Button>
+                <Button
                     x:Name="button_Config"
                     Content="Config"
                     Click="button_Config_Click" />
@@ -70,6 +81,8 @@
         <TextBox
             x:Name="textBlock_Log"
             TextWrapping="Wrap"
-            IsReadOnly="True" />
+            IsReadOnly="True"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto" />
     </DockPanel>
 </Window>

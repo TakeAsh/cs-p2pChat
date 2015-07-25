@@ -37,6 +37,24 @@ namespace p2pChat {
             _listener = new Listener(textBlock_Log);
         }
 
+        private void ToggleListener() {
+            if (_listener.IsBusy) {
+                _listener.Stop();
+                image_ListenStatus.Source = ResourceHelper.GetImage("Images/Wait.png");
+            } else {
+                _listener.Start();
+                image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
+            }
+        }
+
+        private void Disconnect() {
+            _talker.Dispose();
+            _talker = null;
+            button_Connect.IsEnabled = true;
+            button_Disconnect.IsEnabled = false;
+            button_Send.IsEnabled = false;
+        }
+
         private void Window_Closing(object sender, CancelEventArgs e) {
             if (_listener.IsBusy) {
                 _listener.Dispose();
@@ -65,11 +83,7 @@ namespace p2pChat {
         }
 
         private void button_Disconnect_Click(object sender, RoutedEventArgs e) {
-            _talker.Dispose();
-            _talker = null;
-            button_Connect.IsEnabled = true;
-            button_Disconnect.IsEnabled = false;
-            button_Send.IsEnabled = false;
+            Disconnect();
         }
 
         private void button_Config_Click(object sender, RoutedEventArgs e) {
@@ -88,10 +102,20 @@ namespace p2pChat {
                 String.IsNullOrEmpty(textBox_Message.Text)) {
                 return;
             }
-            _talker.Talk(textBox_Name.Text + "\t" + textBox_Message.Text);
-            textBox_Message.Text = null;
-            _settings.MyName = textBox_Name.Text;
-            _settings.Save();
+            try {
+                _talker.Talk(textBox_Name.Text + "\t" + textBox_Message.Text);
+                textBox_Message.Text = null;
+                _settings.MyName = textBox_Name.Text;
+                _settings.Save();
+            }
+            catch (Exception ex) {
+                textBlock_Log.Text += ex.Message + "\n";
+                Disconnect();
+            }
+        }
+
+        private void button_ListeningStatus_Click(object sender, RoutedEventArgs e) {
+            ToggleListener();
         }
     }
 }
