@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -98,9 +99,11 @@ namespace p2pChat {
                 ShowMessage("Connected: " + clientAddress);
                 try {
                     var isDisconnected = false;
-                    while (!isDisconnected && _listener.Active) {
+                    while (!isDisconnected &&
+                        client.GetState() == TcpState.Established &&
+                        _listener.Active) {
+                        Thread.Sleep(100);
                         if (!ns.DataAvailable) {
-                            Thread.Sleep(100);
                             continue;
                         }
                         var message = "";
@@ -125,7 +128,6 @@ namespace p2pChat {
                             var sendBuffer = Encoding.UTF8.GetBytes(response);
                             ns.Write(sendBuffer, 0, sendBuffer.Length);
                         }
-                        Thread.Sleep(100);
                     }
                 }
                 catch (Exception ex) {
