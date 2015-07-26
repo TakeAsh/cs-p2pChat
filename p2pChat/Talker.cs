@@ -27,10 +27,18 @@ namespace p2pChat {
         private NetworkStream _ns;
         private BackgroundWorker _worker;
 
-        public Talker(string host, int port, TextBox log) {
+        public Talker(
+            string host,
+            int port,
+            TextBox log,
+            EventHandler<PropertyChangedEventArgs> connectedChangedHandler = null
+        ) {
             Host = host;
             Port = port;
             _log = log;
+            if (connectedChangedHandler != null) {
+                this.ConnectedChanged += connectedChangedHandler;
+            }
             _client = new TcpClient(Host, Port);
             _ns = _client.GetStream();
             if (_ns.CanTimeout) {
@@ -38,7 +46,7 @@ namespace p2pChat {
                 _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
             }
             _worker = CreateWorker();
-            ShowMessage("Connect: " + Host + ":" + Port);
+            OnConnectedChanged(new PropertyChangedEventArgs("Connected"));
         }
 
         public string Host { get; private set; }
@@ -67,7 +75,7 @@ namespace p2pChat {
                     }
                     Thread.Sleep(100);
                 }
-                ShowMessage("Disconnect: " + Host + ":" + Port);
+                OnConnectedChanged(new PropertyChangedEventArgs("Connected"));
             };
             worker.ProgressChanged += (sender, e) => {
                 var message = e.UserState as string;
@@ -142,6 +150,19 @@ namespace p2pChat {
 
         ~Talker() {
             Dispose(false);
+        }
+
+        #endregion
+
+        #region ConnectedChanged Event
+
+        public event EventHandler<PropertyChangedEventArgs> ConnectedChanged;
+
+        protected virtual void OnConnectedChanged(PropertyChangedEventArgs e) {
+            var handler = ConnectedChanged;
+            if (handler != null) {
+                handler(this, e);
+            }
         }
 
         #endregion
