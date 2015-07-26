@@ -37,6 +37,10 @@ namespace p2pChat {
             _listener = new Listener(textBlock_Log);
         }
 
+        private void ShowMessage(string message) {
+            textBlock_Log.Text += message + "\n";
+        }
+
         private void ToggleListener() {
             if (_listener.IsBusy) {
                 _listener.Stop();
@@ -47,12 +51,13 @@ namespace p2pChat {
                     image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
                 }
                 catch (Exception ex) {
-                    textBlock_Log.Text += ex.GetAllMessages() + "\n";
+                    ShowMessage(ex.GetAllMessages());
                 }
             }
         }
 
         private void Disconnect() {
+            ShowMessage("Disconnect: " + _talker.Host + ":" + _talker.Port);
             _talker.Dispose();
             _talker = null;
             button_Connect.IsEnabled = true;
@@ -81,9 +86,10 @@ namespace p2pChat {
                 button_Connect.IsEnabled = false;
                 button_Disconnect.IsEnabled = true;
                 button_Send.IsEnabled = true;
+                ShowMessage("Connect: " + host + ":" + port);
             }
             catch (Exception ex) {
-                textBlock_Log.Text += ex.GetAllMessages() + "\n";
+                ShowMessage(ex.GetAllMessages());
             }
         }
 
@@ -114,7 +120,7 @@ namespace p2pChat {
                 _settings.Save();
             }
             catch (Exception ex) {
-                textBlock_Log.Text += ex.Message + "\n";
+                ShowMessage(ex.Message);
                 Disconnect();
             }
         }
