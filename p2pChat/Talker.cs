@@ -14,7 +14,8 @@ using TakeAshUtility;
 namespace p2pChat {
 
     public class Talker :
-        IDisposable {
+        IDisposable,
+        INotifyPropertyChanged {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
@@ -31,13 +32,13 @@ namespace p2pChat {
             string host,
             int port,
             TextBox log,
-            EventHandler<PropertyChangedEventArgs> connectedChangedHandler = null
+            PropertyChangedEventHandler propertyChangedHandler = null
         ) {
             Host = host;
             Port = port;
             _log = log;
-            if (connectedChangedHandler != null) {
-                this.ConnectedChanged += connectedChangedHandler;
+            if (propertyChangedHandler != null) {
+                this.PropertyChanged += propertyChangedHandler;
             }
             _client = new TcpClient(Host, Port);
             _ns = _client.GetStream();
@@ -46,7 +47,7 @@ namespace p2pChat {
                 _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
             }
             _worker = CreateWorker();
-            OnConnectedChanged(new PropertyChangedEventArgs("Connected"));
+            NotifyPropertyChanged("Connected");
         }
 
         public string Host { get; private set; }
@@ -75,7 +76,7 @@ namespace p2pChat {
                     }
                     Thread.Sleep(100);
                 }
-                OnConnectedChanged(new PropertyChangedEventArgs("Connected"));
+                NotifyPropertyChanged("Connected");
             };
             worker.ProgressChanged += (sender, e) => {
                 var message = e.UserState as string;
@@ -154,14 +155,14 @@ namespace p2pChat {
 
         #endregion
 
-        #region ConnectedChanged Event
+        #region INotifyPropertyChanged members
 
-        public event EventHandler<PropertyChangedEventArgs> ConnectedChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnConnectedChanged(PropertyChangedEventArgs e) {
-            var handler = ConnectedChanged;
+        protected virtual void NotifyPropertyChanged(string propertyName = "") {
+            var handler = PropertyChanged;
             if (handler != null) {
-                handler(this, e);
+                handler(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
