@@ -82,7 +82,7 @@ namespace p2pChat {
                 var port = uri.Port > 0 ?
                     uri.Port :
                     _settings.Port;
-                _talker = new Talker(host, port, textBlock_Log, talker_PropertyChanged);
+                _talker = new Talker(host, port, talker_PropertyChanged);
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
             }
@@ -132,11 +132,11 @@ namespace p2pChat {
             if (talker == null) {
                 return;
             }
-            switch (e.PropertyName) {
-                case "Connected":
-                    Dispatcher.BeginInvoke(
-                        DispatcherPriority.Background,
-                        new Action(() => {
+            Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() => {
+                    switch (e.PropertyName) {
+                        case "Connected":
                             if (talker.Connected) {
                                 ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
                                 button_Connect.IsEnabled = false;
@@ -148,10 +148,13 @@ namespace p2pChat {
                                 button_Disconnect.IsEnabled = false;
                                 button_Send.IsEnabled = false;
                             }
-                        })
-                    );
-                    break;
-            }
+                            break;
+                        case "Message":
+                            textBlock_Log.Text += talker.Message + "\n";
+                            break;
+                    }
+                })
+            );
         }
     }
 }

@@ -23,20 +23,18 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
-        private TextBox _log;
         private TcpClient _client;
         private NetworkStream _ns;
         private BackgroundWorker _worker;
+        private string _message = null;
 
         public Talker(
             string host,
             int port,
-            TextBox log,
             PropertyChangedEventHandler propertyChangedHandler = null
         ) {
             Host = host;
             Port = port;
-            _log = log;
             if (propertyChangedHandler != null) {
                 this.PropertyChanged += propertyChangedHandler;
             }
@@ -52,8 +50,17 @@ namespace p2pChat {
 
         public string Host { get; private set; }
         public int Port { get; private set; }
+
         public bool Connected {
             get { return _client.GetState() == TcpState.Established; }
+        }
+
+        public string Message {
+            get { return _message; }
+            private set {
+                _message = value;
+                NotifyPropertyChanged("Message");
+            }
         }
 
         public void Talk(string message) {
@@ -83,19 +90,12 @@ namespace p2pChat {
                 if (String.IsNullOrEmpty(message)) {
                     return;
                 }
-                _log.Text += message + "\n";
+                Message = message;
             };
             worker.RunWorkerCompleted += (sender, e) => {
             };
             worker.RunWorkerAsync();
             return worker;
-        }
-
-        private void ShowMessage(string message) {
-            if (!_worker.IsBusy) {
-                return;
-            }
-            _worker.ReportProgress(0, message);
         }
 
         private void HandleClient() {
@@ -117,14 +117,14 @@ namespace p2pChat {
                         Encoding.UTF8
                             .GetString(ms.GetBuffer(), 0, (int)ms.Length);
                 }
-                ShowMessage(message.Trim(WhiteSpaces));
+                Message = message.Trim(WhiteSpaces);
             }
             catch (Exception ex) {
                 var socketException = ex.InnerException as SocketException;
                 var message = socketException == null ?
                     ex.GetAllMessages() :
                     ((SocketError)socketException.ErrorCode).ToString();
-                ShowMessage(message);
+                Message = message;
             }
         }
 
