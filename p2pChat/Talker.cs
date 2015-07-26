@@ -21,18 +21,16 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
-        private string _host;
-        private int _port;
         private TextBox _log;
         private TcpClient _client;
         private NetworkStream _ns;
         private BackgroundWorker _worker;
 
         public Talker(string host, int port, TextBox log) {
-            _host = host;
-            _port = port;
+            Host = host;
+            Port = port;
             _log = log;
-            _client = new TcpClient(_host, _port);
+            _client = new TcpClient(Host, Port);
             _ns = _client.GetStream();
             if (_ns.CanTimeout) {
                 _ns.ReadTimeout = _settings.NetworkTimeout * 1000;
@@ -40,6 +38,9 @@ namespace p2pChat {
             }
             _worker = CreateWorker();
         }
+
+        public string Host { get; private set; }
+        public int Port { get; private set; }
 
         public void Talk(string message) {
             if (_ns == null || !_ns.CanWrite) {
