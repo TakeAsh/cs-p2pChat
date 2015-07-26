@@ -35,7 +35,7 @@ namespace p2pChat {
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
-            _listener = new Listener(textBlock_Log);
+            _listener = new Listener(listener_PropertyChanged);
         }
 
         private void ShowMessage(string message) {
@@ -151,6 +151,23 @@ namespace p2pChat {
                             break;
                         case "Message":
                             textBlock_Log.Text += talker.Message + "\n";
+                            break;
+                    }
+                })
+            );
+        }
+
+        private void listener_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            var listener = sender as Listener;
+            if (listener == null) {
+                return;
+            }
+            Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() => {
+                    switch (e.PropertyName) {
+                        case "Message":
+                            textBlock_Log.Text += listener.Message + "\n";
                             break;
                     }
                 })

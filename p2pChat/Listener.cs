@@ -14,7 +14,8 @@ using TakeAshUtility;
 namespace p2pChat {
 
     public class Listener :
-        IDisposable {
+        IDisposable,
+        INotifyPropertyChanged {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
@@ -22,12 +23,16 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
-        private TextBox _log;
         private TcpListenerEx _listener;
         private BackgroundWorker _worker;
+        private string _message = null;
 
-        public Listener(TextBox log) {
-            _log = log;
+        public Listener(
+            PropertyChangedEventHandler propertyChangedHandler = null
+        ) {
+            if (propertyChangedHandler != null) {
+                this.PropertyChanged += propertyChangedHandler;
+            }
             _listener = new TcpListenerEx(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
             _worker = CreateWorker();
@@ -35,6 +40,14 @@ namespace p2pChat {
 
         public bool IsBusy {
             get { return _listener.Active; }
+        }
+
+        public string Message {
+            get { return _message; }
+            private set {
+                _message = value;
+                NotifyPropertyChanged("Message");
+            }
         }
 
         public void Start() {
@@ -71,18 +84,11 @@ namespace p2pChat {
                 if (String.IsNullOrEmpty(message)) {
                     return;
                 }
-                _log.Text += message + "\n";
+                Message = message;
             };
             worker.RunWorkerCompleted += (sender, e) => {
             };
             return worker;
-        }
-
-        private void ShowMessage(string message) {
-            if (!_worker.IsBusy) {
-                return;
-            }
-            _worker.ReportProgress(0, message);
         }
 
         private void HandleClient(Object state) {
@@ -96,7 +102,7 @@ namespace p2pChat {
                 var clientAddress = endPoint != null ?
                     endPoint.Address.ToString() + ":" + endPoint.Port.ToString() :
                     null;
-                ShowMessage("Connected: " + clientAddress);
+                Message = "Connected: " + clientAddress;
                 try {
                     var isDisconnected = false;
                     while (!isDisconnected &&
@@ -122,7 +128,7 @@ namespace p2pChat {
                                     .GetString(ms.GetBuffer(), 0, (int)ms.Length);
                             }
                         }
-                        ShowMessage(message.Trim(WhiteSpaces));
+                        Message = message.Trim(WhiteSpaces);
                         if (!isDisconnected) {
                             var response = "Received: " + message.Length.ToString() + "\r\n\0";
                             var sendBuffer = Encoding.UTF8.GetBytes(response);
@@ -135,9 +141,9 @@ namespace p2pChat {
                     var message = socketException == null ?
                         ex.GetAllMessages() :
                         ((SocketError)socketException.ErrorCode).ToString() + ": " + clientAddress;
-                    ShowMessage(message);
+                    Message = message;
                 }
-                ShowMessage("Disconnected: " + clientAddress);
+                Message = "Disconnected: " + clientAddress;
             }
         }
 
@@ -163,6 +169,19 @@ namespace p2pChat {
 
         ~Listener() {
             Dispose(false);
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void NotifyPropertyChanged(string propertyName = "") {
+            var handler = PropertyChanged;
+            if (handler != null) {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
         #endregion
