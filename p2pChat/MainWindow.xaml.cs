@@ -82,7 +82,7 @@ namespace p2pChat {
                 var port = uri.Port > 0 ?
                     uri.Port :
                     _settings.Port;
-                _talker = new Talker(host, port, textBlock_Log, talker_ConnectedChanged);
+                _talker = new Talker(host, port, textBlock_Log, talker_PropertyChanged);
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
             }
@@ -127,27 +127,31 @@ namespace p2pChat {
             ToggleListener();
         }
 
-        private void talker_ConnectedChanged(object sender, PropertyChangedEventArgs e) {
+        private void talker_PropertyChanged(object sender, PropertyChangedEventArgs e) {
             var talker = sender as Talker;
             if (talker == null) {
                 return;
             }
-            Dispatcher.BeginInvoke(
-                DispatcherPriority.Background,
-                new Action(() => {
-                    if (talker.Connected) {
-                        ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
-                        button_Connect.IsEnabled = false;
-                        button_Disconnect.IsEnabled = true;
-                        button_Send.IsEnabled = true;
-                    } else {
-                        ShowMessage("Disconnect: " + talker.Host + ":" + talker.Port);
-                        button_Connect.IsEnabled = true;
-                        button_Disconnect.IsEnabled = false;
-                        button_Send.IsEnabled = false;
-                    }
-                })
-            );
+            switch (e.PropertyName) {
+                case "Connected":
+                    Dispatcher.BeginInvoke(
+                        DispatcherPriority.Background,
+                        new Action(() => {
+                            if (talker.Connected) {
+                                ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
+                                button_Connect.IsEnabled = false;
+                                button_Disconnect.IsEnabled = true;
+                                button_Send.IsEnabled = true;
+                            } else {
+                                ShowMessage("Disconnect: " + talker.Host + ":" + talker.Port);
+                                button_Connect.IsEnabled = true;
+                                button_Disconnect.IsEnabled = false;
+                                button_Send.IsEnabled = false;
+                            }
+                        })
+                    );
+                    break;
+            }
         }
     }
 }
