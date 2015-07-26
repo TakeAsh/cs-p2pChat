@@ -58,10 +58,7 @@ namespace p2pChat {
                 WorkerSupportsCancellation = true,
             };
             worker.DoWork += (sender, e) => {
-                while (true) {
-                    if (e.Cancel || !_listener.Active) {
-                        break;
-                    }
+                while (_listener.Active && !e.Cancel) {
                     if (_listener.Pending()) {
                         ThreadPool.QueueUserWorkItem(HandleClient);
                     }
