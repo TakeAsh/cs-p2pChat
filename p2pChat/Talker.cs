@@ -55,10 +55,7 @@ namespace p2pChat {
                 WorkerSupportsCancellation = true,
             };
             worker.DoWork += (sender, e) => {
-                while (true) {
-                    if (e.Cancel || !_ns.CanRead) {
-                        break;
-                    }
+                while (_ns.CanRead && !e.Cancel) {
                     if (_ns.DataAvailable) {
                         HandleClient();
                     }
