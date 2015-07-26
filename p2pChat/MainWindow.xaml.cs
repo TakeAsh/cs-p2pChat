@@ -59,7 +59,6 @@ namespace p2pChat {
         }
 
         private void Disconnect() {
-            ShowMessage("Disconnect: " + _talker.Host + ":" + _talker.Port);
             _talker.Dispose();
             _talker = null;
             button_Connect.IsEnabled = true;
@@ -88,7 +87,6 @@ namespace p2pChat {
                 button_Connect.IsEnabled = false;
                 button_Disconnect.IsEnabled = true;
                 button_Send.IsEnabled = true;
-                ShowMessage("Connect: " + host + ":" + port);
             }
             catch (Exception ex) {
                 ShowMessage(ex.GetAllMessages());

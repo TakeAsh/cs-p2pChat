@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -37,10 +38,14 @@ namespace p2pChat {
                 _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
             }
             _worker = CreateWorker();
+            ShowMessage("Connect: " + Host + ":" + Port);
         }
 
         public string Host { get; private set; }
         public int Port { get; private set; }
+        public bool Connected {
+            get { return _client.GetState() == TcpState.Established; }
+        }
 
         public void Talk(string message) {
             if (_ns == null || !_ns.CanWrite) {
@@ -56,12 +61,13 @@ namespace p2pChat {
                 WorkerSupportsCancellation = true,
             };
             worker.DoWork += (sender, e) => {
-                while (_ns.CanRead && !e.Cancel) {
+                while (Connected && _ns.CanRead && !e.Cancel) {
                     if (_ns.DataAvailable) {
                         HandleClient();
                     }
                     Thread.Sleep(100);
                 }
+                ShowMessage("Disconnect: " + Host + ":" + Port);
             };
             worker.ProgressChanged += (sender, e) => {
                 var message = e.UserState as string;
@@ -77,6 +83,9 @@ namespace p2pChat {
         }
 
         private void ShowMessage(string message) {
+            if (!_worker.IsBusy) {
+                return;
+            }
             _worker.ReportProgress(0, message);
         }
 
