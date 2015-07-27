@@ -23,13 +23,13 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
-        private PropertyChangedWithValueEventHandler<string> _propertyChangedHandler;
+        private PropertyChangedWithValueEventHandler _propertyChangedHandler;
         private TcpListenerEx _listener;
         private BackgroundWorker _worker;
         private string _message = null;
 
         public Listener(
-            PropertyChangedWithValueEventHandler<string> propertyChangedHandler = null
+            PropertyChangedWithValueEventHandler propertyChangedHandler = null
         ) {
             if (propertyChangedHandler != null) {
                 _propertyChangedHandler = propertyChangedHandler;
@@ -182,7 +182,7 @@ namespace p2pChat {
         #region INotifyPropertyChangedWithValue members
         #pragma warning disable 0067
 
-        public event PropertyChangedWithValueEventHandler<string> PropertyChangedWithValue;
+        public event PropertyChangedWithValueEventHandler PropertyChangedWithValue;
 
         #pragma warning restore 0067
         #endregion
