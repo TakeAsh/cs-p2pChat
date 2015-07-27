@@ -15,7 +15,7 @@ namespace p2pChat {
 
     public class Listener :
         IDisposable,
-        INotifyPropertyChanged {
+        INotifyPropertyChangedWithValue {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
@@ -23,15 +23,17 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
+        private PropertyChangedWithValueEventHandler<string> _propertyChangedHandler;
         private TcpListenerEx _listener;
         private BackgroundWorker _worker;
         private string _message = null;
 
         public Listener(
-            PropertyChangedEventHandler propertyChangedHandler = null
+            PropertyChangedWithValueEventHandler<string> propertyChangedHandler = null
         ) {
             if (propertyChangedHandler != null) {
-                this.PropertyChanged += propertyChangedHandler;
+                _propertyChangedHandler = propertyChangedHandler;
+                this.PropertyChangedWithValue += propertyChangedHandler;
             }
             _listener = new TcpListenerEx(IPAddress.IPv6Any, _settings.Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
@@ -46,7 +48,7 @@ namespace p2pChat {
             get { return _message; }
             private set {
                 _message = value;
-                this.NotifyPropertyChanged("Message");
+                this.NotifyPropertyChanged("Message", _message);
             }
         }
 
@@ -169,14 +171,18 @@ namespace p2pChat {
 
         ~Listener() {
             Dispose(false);
+            if (_propertyChangedHandler != null) {
+                this.PropertyChangedWithValue -= _propertyChangedHandler;
+                _propertyChangedHandler = null;
+            }
         }
 
         #endregion
 
-        #region INotifyPropertyChanged members
+        #region INotifyPropertyChangedWithValue members
         #pragma warning disable 0067
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedWithValueEventHandler<string> PropertyChangedWithValue;
 
         #pragma warning restore 0067
         #endregion
