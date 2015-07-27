@@ -35,7 +35,7 @@ namespace p2pChat {
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
-            _listener = new Listener(MessagePropertyChanged);
+            _listener = new Listener(PropertyChangedWithValueHandler);
         }
 
         private void ShowMessage(string message) {
@@ -82,7 +82,7 @@ namespace p2pChat {
                 var port = uri.Port > 0 ?
                     uri.Port :
                     _settings.Port;
-                _talker = new Talker(host, port, talker_ConnectedChanged, MessagePropertyChanged);
+                _talker = new Talker(host, port, PropertyChangedWithValueHandler);
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
             }
@@ -127,54 +127,56 @@ namespace p2pChat {
             ToggleListener();
         }
 
-        private void talker_ConnectedChanged(
+        private void PropertyChangedWithValueHandler(
             object sender,
-            PropertyChangedWithValueEventArgs<bool> e
+            PropertyChangedWithValueEventArgs e
         ) {
             var talker = sender as Talker;
-            if (talker == null) {
-                return;
+            if (talker != null) {
+                switch (e.PropertyName) {
+                    case "Connected":
+                        var connected = (bool)e.NewValue;
+                        Dispatcher.BeginInvoke(
+                            DispatcherPriority.Background,
+                            new Action(() => {
+                                if (connected) {
+                                    ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
+                                    button_Connect.IsEnabled = false;
+                                    button_Disconnect.IsEnabled = true;
+                                    button_Send.IsEnabled = true;
+                                } else {
+                                    ShowMessage("Disconnect: " + talker.Host + ":" + talker.Port);
+                                    button_Connect.IsEnabled = true;
+                                    button_Disconnect.IsEnabled = false;
+                                    button_Send.IsEnabled = false;
+                                }
+                            })
+                        );
+                        break;
+                    case "Message":
+                        var message = e.NewValue as string;
+                        Dispatcher.BeginInvoke(
+                            DispatcherPriority.Background,
+                            new Action(() => {
+                                textBlock_Log.Text += message + "\n";
+                            })
+                        );
+                        break;
+                }
             }
-            switch (e.PropertyName) {
-                case "Connected":
-                    Dispatcher.BeginInvoke(
-                        DispatcherPriority.Background,
-                        new Action(() => {
-                            if (e.NewValue) {
-                                ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
-                                button_Connect.IsEnabled = false;
-                                button_Disconnect.IsEnabled = true;
-                                button_Send.IsEnabled = true;
-                            } else {
-                                ShowMessage("Disconnect: " + talker.Host + ":" + talker.Port);
-                                button_Connect.IsEnabled = true;
-                                button_Disconnect.IsEnabled = false;
-                                button_Send.IsEnabled = false;
-                            }
-                        })
-                    );
-                    break;
-            }
-        }
-
-        private void MessagePropertyChanged(
-            object sender,
-            PropertyChangedWithValueEventArgs<string> e
-        ) {
-            var talker = sender as Talker;
             var listener = sender as Listener;
-            if (talker == null && listener == null) {
-                return;
-            }
-            switch (e.PropertyName) {
-                case "Message":
-                    Dispatcher.BeginInvoke(
-                        DispatcherPriority.Background,
-                        new Action(() => {
-                            textBlock_Log.Text += e.NewValue + "\n";
-                        })
-                    );
-                    break;
+            if (listener != null) {
+                switch (e.PropertyName) {
+                    case "Message":
+                        var message = e.NewValue as string;
+                        Dispatcher.BeginInvoke(
+                            DispatcherPriority.Background,
+                            new Action(() => {
+                                textBlock_Log.Text += message + "\n";
+                            })
+                        );
+                        break;
+                }
             }
         }
     }
