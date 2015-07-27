@@ -35,7 +35,7 @@ namespace p2pChat {
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
-            _listener = new Listener(listener_PropertyChanged);
+            _listener = new Listener(MessagePropertyChanged);
         }
 
         private void ShowMessage(string message) {
@@ -82,7 +82,7 @@ namespace p2pChat {
                 var port = uri.Port > 0 ?
                     uri.Port :
                     _settings.Port;
-                _talker = new Talker(host, port, talker_PropertyChanged);
+                _talker = new Talker(host, port, talker_ConnectedChanged, MessagePropertyChanged);
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
             }
@@ -127,17 +127,20 @@ namespace p2pChat {
             ToggleListener();
         }
 
-        private void talker_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void talker_ConnectedChanged(
+            object sender,
+            PropertyChangedWithValueEventArgs<bool> e
+        ) {
             var talker = sender as Talker;
             if (talker == null) {
                 return;
             }
-            Dispatcher.BeginInvoke(
-                DispatcherPriority.Background,
-                new Action(() => {
-                    switch (e.PropertyName) {
-                        case "Connected":
-                            if (talker.Connected) {
+            switch (e.PropertyName) {
+                case "Connected":
+                    Dispatcher.BeginInvoke(
+                        DispatcherPriority.Background,
+                        new Action(() => {
+                            if (e.NewValue) {
                                 ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
                                 button_Connect.IsEnabled = false;
                                 button_Disconnect.IsEnabled = true;
@@ -148,30 +151,31 @@ namespace p2pChat {
                                 button_Disconnect.IsEnabled = false;
                                 button_Send.IsEnabled = false;
                             }
-                            break;
-                        case "Message":
-                            textBlock_Log.Text += talker.Message + "\n";
-                            break;
-                    }
-                })
-            );
+                        })
+                    );
+                    break;
+            }
         }
 
-        private void listener_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void MessagePropertyChanged(
+            object sender,
+            PropertyChangedWithValueEventArgs<string> e
+        ) {
+            var talker = sender as Talker;
             var listener = sender as Listener;
-            if (listener == null) {
+            if (talker == null && listener == null) {
                 return;
             }
-            Dispatcher.BeginInvoke(
-                DispatcherPriority.Background,
-                new Action(() => {
-                    switch (e.PropertyName) {
-                        case "Message":
-                            textBlock_Log.Text += listener.Message + "\n";
-                            break;
-                    }
-                })
-            );
+            switch (e.PropertyName) {
+                case "Message":
+                    Dispatcher.BeginInvoke(
+                        DispatcherPriority.Background,
+                        new Action(() => {
+                            textBlock_Log.Text += e.NewValue + "\n";
+                        })
+                    );
+                    break;
+            }
         }
     }
 }
