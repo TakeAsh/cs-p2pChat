@@ -15,7 +15,7 @@ namespace p2pChat {
 
     public class Talker :
         IDisposable,
-        INotifyPropertyChanged {
+        INotifyPropertyChangedWithValue {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
@@ -23,6 +23,8 @@ namespace p2pChat {
         private static Properties.Settings _settings = Properties.Settings.Default;
 
         private bool disposed = false;
+        private PropertyChangedWithValueEventHandler<bool> _connectedChangedHandler;
+        private PropertyChangedWithValueEventHandler<string> _messageChangedHandler;
         private TcpClient _client;
         private NetworkStream _ns;
         private BackgroundWorker _worker;
@@ -31,12 +33,18 @@ namespace p2pChat {
         public Talker(
             string host,
             int port,
-            PropertyChangedEventHandler propertyChangedHandler = null
+            PropertyChangedWithValueEventHandler<bool> connectedChangedHandler = null,
+            PropertyChangedWithValueEventHandler<string> messageChangedHandler = null
         ) {
             Host = host;
             Port = port;
-            if (propertyChangedHandler != null) {
-                this.PropertyChanged += propertyChangedHandler;
+            if (connectedChangedHandler != null) {
+                _connectedChangedHandler = connectedChangedHandler;
+                this.ConnectedChanged += connectedChangedHandler;
+            }
+            if (messageChangedHandler != null) {
+                _messageChangedHandler = messageChangedHandler;
+                this.MessageChanged += messageChangedHandler;
             }
             _client = new TcpClient(Host, Port);
             _ns = _client.GetStream();
@@ -45,7 +53,7 @@ namespace p2pChat {
                 _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
             }
             _worker = CreateWorker();
-            this.NotifyPropertyChanged("Connected");
+            this.NotifyPropertyChanged("Connected", true, false, "ConnectedChanged");
         }
 
         public string Host { get; private set; }
@@ -59,7 +67,7 @@ namespace p2pChat {
             get { return _message; }
             private set {
                 _message = value;
-                this.NotifyPropertyChanged("Message");
+                this.NotifyPropertyChanged("Message", _message, null, "MessageChanged");
             }
         }
 
@@ -83,7 +91,7 @@ namespace p2pChat {
                     }
                     Thread.Sleep(100);
                 }
-                this.NotifyPropertyChanged("Connected");
+                this.NotifyPropertyChanged("Connected", false, true, "ConnectedChanged");
             };
             worker.ProgressChanged += (sender, e) => {
                 var message = e.UserState as string;
@@ -151,14 +159,23 @@ namespace p2pChat {
 
         ~Talker() {
             Dispose(false);
+            if (_connectedChangedHandler != null) {
+                this.ConnectedChanged -= _connectedChangedHandler;
+                _connectedChangedHandler = null;
+            }
+            if (_messageChangedHandler != null) {
+                this.MessageChanged -= _messageChangedHandler;
+                _messageChangedHandler = null;
+            }
         }
 
         #endregion
 
-        #region INotifyPropertyChanged members
+        #region INotifyPropertyChangedWithValue members
         #pragma warning disable 0067
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedWithValueEventHandler<bool> ConnectedChanged;
+        public event PropertyChangedWithValueEventHandler<string> MessageChanged;
 
         #pragma warning restore 0067
         #endregion
