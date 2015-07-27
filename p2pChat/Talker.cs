@@ -45,7 +45,7 @@ namespace p2pChat {
                 _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
             }
             _worker = CreateWorker();
-            NotifyPropertyChanged("Connected");
+            this.NotifyPropertyChanged("Connected");
         }
 
         public string Host { get; private set; }
@@ -59,7 +59,7 @@ namespace p2pChat {
             get { return _message; }
             private set {
                 _message = value;
-                NotifyPropertyChanged("Message");
+                this.NotifyPropertyChanged("Message");
             }
         }
 
@@ -83,7 +83,7 @@ namespace p2pChat {
                     }
                     Thread.Sleep(100);
                 }
-                NotifyPropertyChanged("Connected");
+                this.NotifyPropertyChanged("Connected");
             };
             worker.ProgressChanged += (sender, e) => {
                 var message = e.UserState as string;
@@ -156,16 +156,11 @@ namespace p2pChat {
         #endregion
 
         #region INotifyPropertyChanged members
+        #pragma warning disable 0067
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void NotifyPropertyChanged(string propertyName = "") {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
+        #pragma warning restore 0067
         #endregion
     }
 }

@@ -46,7 +46,7 @@ namespace p2pChat {
             get { return _message; }
             private set {
                 _message = value;
-                NotifyPropertyChanged("Message");
+                this.NotifyPropertyChanged("Message");
             }
         }
 
@@ -174,16 +174,11 @@ namespace p2pChat {
         #endregion
 
         #region INotifyPropertyChanged members
+        #pragma warning disable 0067
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void NotifyPropertyChanged(string propertyName = "") {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
+        #pragma warning restore 0067
         #endregion
     }
 }
