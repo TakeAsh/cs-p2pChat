@@ -20,8 +20,6 @@ namespace p2pChat {
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
 
-        private static Properties.Settings _settings = Properties.Settings.Default;
-
         private bool disposed = false;
         private PropertyChangedWithValueEventHandler _propertyChangedHandler;
         private TcpListenerEx _listener;
@@ -29,16 +27,23 @@ namespace p2pChat {
         private string _message = null;
 
         public Listener(
+            int port,
+            int timeout,
             PropertyChangedWithValueEventHandler propertyChangedHandler = null
         ) {
+            Port = port;
+            Timeout = timeout;
             if (propertyChangedHandler != null) {
                 _propertyChangedHandler = propertyChangedHandler;
                 this.PropertyChangedWithValue += propertyChangedHandler;
             }
-            _listener = new TcpListenerEx(IPAddress.IPv6Any, _settings.Port);
+            _listener = new TcpListenerEx(IPAddress.IPv6Any, Port);
             _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
             _worker = CreateWorker();
         }
+
+        public int Port { get; private set; }
+        public int Timeout { get; private set; }
 
         public bool IsBusy {
             get { return _listener.Active; }
@@ -97,8 +102,8 @@ namespace p2pChat {
             using (var client = _listener.AcceptTcpClient())
             using (var ns = client.GetStream()) {
                 if (ns.CanTimeout) {
-                    ns.ReadTimeout = _settings.NetworkTimeout * 1000;
-                    ns.WriteTimeout = _settings.NetworkTimeout * 1000;
+                    ns.ReadTimeout = Timeout * 1000;
+                    ns.WriteTimeout = Timeout * 1000;
                 }
                 var endPoint = client.Client.RemoteEndPoint as IPEndPoint;
                 var clientAddress = endPoint != null ?
