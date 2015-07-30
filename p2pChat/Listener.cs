@@ -63,12 +63,14 @@ namespace p2pChat {
             }
             _listener.Start();
             _worker.RunWorkerAsync();
+            Message = "Start listening: " + _listener.Server.LocalEndPoint;
         }
 
         public void Stop() {
             if (!_listener.Active) {
                 return;
             }
+            Message = "Stop listening: " + _listener.Server.LocalEndPoint;
             _worker.CancelAsync();
             _listener.Stop();
         }

@@ -45,12 +45,10 @@ namespace p2pChat {
         private void ToggleListener() {
             if (_listener.IsBusy) {
                 _listener.Stop();
-                ShowMessage("Stop listening: " + _settings.Port);
                 image_ListenStatus.Source = ResourceHelper.GetImage("Images/Wait.png");
             } else {
                 try {
                     _listener.Start();
-                    ShowMessage("Start listening: " + _settings.Port);
                     image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
                 }
                 catch (Exception ex) {
