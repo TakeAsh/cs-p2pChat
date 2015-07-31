@@ -157,6 +157,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\cs-EnumHelper\EnumHelperLib\EnumHelperLib.csproj">
+      <Project>{350A3E35-55C2-46C4-A393-F5A1FE5D0DE6}</Project>
+      <Name>EnumHelperLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\cs-TakeAshUtility\TakeAshUtility\TakeAshUtility.csproj">
       <Project>{26A4A55A-CA4E-455C-8C14-832A73E23DFE}</Project>
       <Name>TakeAshUtility</Name>
