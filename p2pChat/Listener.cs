@@ -29,6 +29,7 @@ namespace p2pChat {
         public Listener(
             int port,
             int timeout,
+            bool useIPv6,
             PropertyChangedWithValueEventHandler propertyChangedHandler = null
         ) {
             Port = port;
@@ -37,8 +38,15 @@ namespace p2pChat {
                 _propertyChangedHandler = propertyChangedHandler;
                 this.PropertyChangedWithValue += propertyChangedHandler;
             }
-            _listener = new TcpListenerEx(IPAddress.IPv6Any, Port);
-            _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
+            _listener = new TcpListenerEx(
+                (useIPv6 ?
+                    IPAddress.IPv6Any :
+                    IPAddress.Any),
+                Port
+            );
+            if (useIPv6) {
+                _listener.Server.SetSocketOption(SocketOptionLevel.IPv6, SocketOptionName.IPv6Only, 0);
+            }
             _worker = CreateWorker();
         }
 
