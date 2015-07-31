@@ -45,8 +45,8 @@ namespace p2pChat {
 
         private Listener CreateListener(bool useIPv6) {
             return new Listener(
-                _settings.Port,
-                _settings.NetworkTimeout,
+                textBox_Port.Text.TryParse(_settings.Port),
+                textBox_NetworkTimeout.Text.TryParse(_settings.NetworkTimeout),
                 useIPv6,
                 PropertyChangedWithValueHandler
             );
