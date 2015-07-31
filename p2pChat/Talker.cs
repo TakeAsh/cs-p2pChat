@@ -20,8 +20,6 @@ namespace p2pChat {
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
 
-        private static Properties.Settings _settings = Properties.Settings.Default;
-
         private bool disposed = false;
         private PropertyChangedWithValueEventHandler _propertyChangedWithValue;
         private TcpClient _client;
@@ -32,10 +30,12 @@ namespace p2pChat {
         public Talker(
             string host,
             int port,
+            int timeout,
             PropertyChangedWithValueEventHandler propertyChangedWithValue = null
         ) {
             Host = host;
             Port = port;
+            Timeout = timeout;
             if (propertyChangedWithValue != null) {
                 _propertyChangedWithValue = propertyChangedWithValue;
                 this.PropertyChangedWithValue += propertyChangedWithValue;
@@ -43,8 +43,8 @@ namespace p2pChat {
             _client = new TcpClient(Host, Port);
             _ns = _client.GetStream();
             if (_ns.CanTimeout) {
-                _ns.ReadTimeout = _settings.NetworkTimeout * 1000;
-                _ns.WriteTimeout = _settings.NetworkTimeout * 1000;
+                _ns.ReadTimeout = Timeout * 1000;
+                _ns.WriteTimeout = Timeout * 1000;
             }
             _worker = CreateWorker();
             this.NotifyPropertyChanged("Connected", true);
@@ -52,6 +52,7 @@ namespace p2pChat {
 
         public string Host { get; private set; }
         public int Port { get; private set; }
+        public int Timeout { get; private set; }
 
         public bool Connected {
             get { return _client.GetState() == TcpState.Established; }
