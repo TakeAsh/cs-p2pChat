@@ -34,6 +34,7 @@ namespace p2pChat {
             textBox_Host.Text = _settings.Host;
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
+            textBox_NetworkTimeout.Text = _settings.NetworkTimeout.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
             _listener = CreateListener(false);
         }
@@ -108,6 +109,7 @@ namespace p2pChat {
             } else {
                 group_Config.Visibility = Visibility.Collapsed;
                 _settings.Port = textBox_Port.Text.TryParse(_settings.Port);
+                _settings.NetworkTimeout = textBox_NetworkTimeout.Text.TryParse(_settings.NetworkTimeout);
                 _settings.Save();
             }
         }

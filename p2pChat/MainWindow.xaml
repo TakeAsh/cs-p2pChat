@@ -48,6 +48,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -61,6 +62,14 @@
                 <TextBox
                     x:Name="textBox_Port"
                     Grid.Row="0" Grid.Column="1" />
+                <TextBlock
+                    Text="Network Timeout"
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="4" />
+                <TextBox
+                    x:Name="textBox_NetworkTimeout"
+                    Grid.Row="1" Grid.Column="1" />
             </Grid>
         </GroupBox>
         <DockPanel
