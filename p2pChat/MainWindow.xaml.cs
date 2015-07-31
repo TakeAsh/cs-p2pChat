@@ -48,7 +48,8 @@ namespace p2pChat {
                 textBox_Port.Text.TryParse(_settings.Port),
                 textBox_NetworkTimeout.Text.TryParse(_settings.NetworkTimeout),
                 useIPv6,
-                PropertyChangedWithValueHandler
+                PropertyChangedWithValueHandler,
+                MessageReceivedEventHandler
             );
         }
 
@@ -186,6 +187,29 @@ namespace p2pChat {
                         );
                         break;
                 }
+            }
+        }
+
+        private void MessageReceivedEventHandler(
+            INotifyMessageReceived sender,
+            MessageReceivedEventArgs e
+        ) {
+            var listener = sender as Listener;
+            if (listener == null) {
+                return;
+            }
+            var message = e.Message.SplitTrim(new[] { "\t" });
+            var body = message.LastOrDefault();
+            switch (body) {
+                case ":Now":
+                    e.Response = DateTime.Now.ToString("g");
+                    break;
+                case ":Me":
+                    e.Response = message.FirstOrDefault();
+                    break;
+                default:
+                    e.Response = body;
+                    break;
             }
         }
     }
