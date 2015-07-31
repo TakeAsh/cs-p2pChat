@@ -101,7 +101,7 @@ namespace p2pChat {
                     textBox_Host.Text;
                 var port = uri.Port > 0 ?
                     uri.Port :
-                    _settings.Port;
+                    textBox_Port.Text.TryParse(_settings.Port);
                 _talker = new Talker(host, port, PropertyChangedWithValueHandler);
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
