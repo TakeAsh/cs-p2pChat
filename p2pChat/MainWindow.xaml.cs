@@ -35,11 +35,20 @@ namespace p2pChat {
             group_Config.Visibility = Visibility.Collapsed;
             textBox_Port.Text = _settings.Port.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
-            _listener = new Listener(_settings.Port, _settings.NetworkTimeout, PropertyChangedWithValueHandler);
+            _listener = CreateListener(false);
         }
 
         private void ShowMessage(string message) {
             textBlock_Log.Text += message + "\n";
+        }
+
+        private Listener CreateListener(bool useIPv6) {
+            return new Listener(
+                _settings.Port,
+                _settings.NetworkTimeout,
+                useIPv6,
+                PropertyChangedWithValueHandler
+            );
         }
 
         private void ToggleListener() {
