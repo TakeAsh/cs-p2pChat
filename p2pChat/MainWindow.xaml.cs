@@ -62,7 +62,11 @@ namespace p2pChat {
                 image_ListenStatus.Source = ResourceHelper.GetImage("Images/Wait.png");
             } else {
                 try {
+                    _listenerV4.Dispose();
+                    _listenerV4 = CreateListener(false);
                     _listenerV4.Start();
+                    _listenerV6.Dispose();
+                    _listenerV6 = CreateListener(true);
                     _listenerV6.Start();
                     image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
                 }
