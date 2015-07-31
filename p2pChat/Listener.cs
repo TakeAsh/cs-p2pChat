@@ -15,13 +15,15 @@ namespace p2pChat {
 
     public class Listener :
         IDisposable,
-        INotifyPropertyChangedWithValue {
+        INotifyPropertyChangedWithValue,
+        INotifyMessageReceived {
 
         private const int BufferSize = 1024;
         private static readonly char[] WhiteSpaces = new[] { ' ', '\n', '\r', '\t', '\0', };
 
         private bool disposed = false;
         private PropertyChangedWithValueEventHandler _propertyChangedHandler;
+        private MessageReceivedEventHandler _messageReceivedEventHandler;
         private TcpListenerEx _listener;
         private BackgroundWorker _worker;
         private string _message = null;
@@ -30,13 +32,18 @@ namespace p2pChat {
             int port,
             int timeout,
             bool useIPv6,
-            PropertyChangedWithValueEventHandler propertyChangedHandler = null
+            PropertyChangedWithValueEventHandler propertyChangedHandler = null,
+            MessageReceivedEventHandler messageReceivedEventHandler = null
         ) {
             Port = port;
             Timeout = timeout;
             if (propertyChangedHandler != null) {
                 _propertyChangedHandler = propertyChangedHandler;
                 this.PropertyChangedWithValue += propertyChangedHandler;
+            }
+            if (messageReceivedEventHandler != null) {
+                _messageReceivedEventHandler = messageReceivedEventHandler;
+                this.MessageReceived += messageReceivedEventHandler;
             }
             _listener = new TcpListenerEx(
                 (useIPv6 ?
@@ -145,9 +152,9 @@ namespace p2pChat {
                                     .GetString(ms.GetBuffer(), 0, (int)ms.Length);
                             }
                         }
-                        Message = message.Trim(WhiteSpaces);
+                        var response = this.NotifyMessageReceived(message.Trim(WhiteSpaces));
                         if (!isDisconnected) {
-                            var response = "Received: " + message.Length.ToString() + "\r\n\0";
+                            response = (response ?? "Received: " + message.Length.ToString()) + "\r\n\0";
                             var sendBuffer = Encoding.UTF8.GetBytes(response);
                             ns.Write(sendBuffer, 0, sendBuffer.Length);
                         }
@@ -190,16 +197,28 @@ namespace p2pChat {
                 this.PropertyChangedWithValue -= _propertyChangedHandler;
                 _propertyChangedHandler = null;
             }
+            if (_messageReceivedEventHandler != null) {
+                this.MessageReceived -= _messageReceivedEventHandler;
+                _messageReceivedEventHandler = null;
+            }
         }
 
         #endregion
 
+#pragma warning disable 0067
+
         #region INotifyPropertyChangedWithValue members
-        #pragma warning disable 0067
 
         public event PropertyChangedWithValueEventHandler PropertyChangedWithValue;
 
-        #pragma warning restore 0067
         #endregion
+
+        #region INotifyMessageReceived members
+
+        public event MessageReceivedEventHandler MessageReceived;
+
+        #endregion
+
+#pragma warning restore 0067
     }
 }
