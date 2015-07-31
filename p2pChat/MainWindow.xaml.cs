@@ -26,7 +26,7 @@ namespace p2pChat {
 
         private static Properties.Settings _settings = Properties.Settings.Default;
 
-        private Listener _listener;
+        private Listener _listenerV4;
         private Talker _talker;
 
         public MainWindow() {
@@ -36,7 +36,7 @@ namespace p2pChat {
             textBox_Port.Text = _settings.Port.ToString();
             textBox_NetworkTimeout.Text = _settings.NetworkTimeout.ToString();
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
-            _listener = CreateListener(false);
+            _listenerV4 = CreateListener(false);
         }
 
         private void ShowMessage(string message) {
@@ -54,12 +54,12 @@ namespace p2pChat {
         }
 
         private void ToggleListener() {
-            if (_listener.IsBusy) {
-                _listener.Stop();
+            if (_listenerV4.IsBusy) {
+                _listenerV4.Stop();
                 image_ListenStatus.Source = ResourceHelper.GetImage("Images/Wait.png");
             } else {
                 try {
-                    _listener.Start();
+                    _listenerV4.Start();
                     image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
                 }
                 catch (Exception ex) {
@@ -77,8 +77,8 @@ namespace p2pChat {
         }
 
         private void Window_Closing(object sender, CancelEventArgs e) {
-            if (_listener.IsBusy) {
-                _listener.Dispose();
+            if (_listenerV4.IsBusy) {
+                _listenerV4.Dispose();
             }
         }
 
