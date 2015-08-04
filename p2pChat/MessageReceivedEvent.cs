@@ -9,12 +9,12 @@ namespace p2pChat {
     public class MessageReceivedEventArgs :
         EventArgs {
 
-        public MessageReceivedEventArgs(string message) {
+        public MessageReceivedEventArgs(ChatMessage message) {
             Message = message;
         }
 
-        public string Message { get; private set; }
-        public string Response { get; set; }
+        public ChatMessage Message { get; private set; }
+        public ChatMessage Response { get; set; }
 
         public override string ToString() {
             return "Message:{" + Message + "}, Response:{" + Response + "}";
@@ -45,7 +45,7 @@ namespace p2pChat {
             handler(sender, e);
         }
 
-        public static string NotifyMessageReceived(this INotifyMessageReceived sender, string message) {
+        public static ChatMessage NotifyMessageReceived(this INotifyMessageReceived sender, ChatMessage message) {
             var e = new MessageReceivedEventArgs(message);
             sender.NotifyMessageReceived(e);
             return e.Response;
