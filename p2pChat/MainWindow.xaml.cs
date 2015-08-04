@@ -49,6 +49,14 @@ namespace p2pChat {
         }
 
         private void ShowMessage(string message) {
+            var image = ResourceHelper.GetEmbeddedImage("Images/NoName.png");
+            if (image != null) {
+                _paragraph.Inlines.Add(new InlineUIContainer(new Image() {
+                    Source = image,
+                    Width = _settings.FontSize, // image.PixelWidth
+                    Height = _settings.FontSize, // image.PixelHeight
+                }));
+            }
             _paragraph.Inlines.Add(new Run(message));
             _paragraph.Inlines.Add(new LineBreak());
         }
