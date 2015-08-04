@@ -29,6 +29,7 @@ namespace p2pChat {
         private Listener _listenerV4;
         private Listener _listenerV6;
         private Talker _talker;
+        private Paragraph _paragraph = new Paragraph();
 
         public MainWindow() {
             InitializeComponent();
@@ -39,10 +40,16 @@ namespace p2pChat {
             textBox_Name.Text = _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName());
             _listenerV4 = CreateListener(false);
             _listenerV6 = CreateListener(true);
+            textBlock_Log.Document = new FlowDocument(_paragraph) {
+                FontFamily = new FontFamily(_settings.FontName),
+                FontSize = _settings.FontSize,
+                PagePadding = new Thickness(0),
+            };
         }
 
         private void ShowMessage(string message) {
-            textBlock_Log.Text += message + "\n";
+            _paragraph.Inlines.Add(new Run(message));
+            _paragraph.Inlines.Add(new LineBreak());
         }
 
         private Listener CreateListener(bool useIPv6) {
@@ -183,9 +190,7 @@ namespace p2pChat {
                         var message = e.NewValue as string;
                         Dispatcher.BeginInvoke(
                             DispatcherPriority.Background,
-                            new Action(() => {
-                                textBlock_Log.Text += message + "\n";
-                            })
+                            new Action(() => ShowMessage(message))
                         );
                         break;
                 }
@@ -197,9 +202,7 @@ namespace p2pChat {
                         var message = e.NewValue as string;
                         Dispatcher.BeginInvoke(
                             DispatcherPriority.Background,
-                            new Action(() => {
-                                textBlock_Log.Text += message + "\n";
-                            })
+                            new Action(() => ShowMessage(message))
                         );
                         break;
                 }
@@ -227,6 +230,10 @@ namespace p2pChat {
                     e.Response = body;
                     break;
             }
+            Dispatcher.BeginInvoke(
+                DispatcherPriority.Background,
+                new Action(() => ShowMessage(e.Message))
+            );
         }
     }
 }

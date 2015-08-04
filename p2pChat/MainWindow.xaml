@@ -87,10 +87,8 @@
             <TextBox
                 x:Name="textBox_Message" />
         </DockPanel>
-        <TextBox
+        <FlowDocumentScrollViewer
             x:Name="textBlock_Log"
-            TextWrapping="Wrap"
-            IsReadOnly="True"
             HorizontalScrollBarVisibility="Auto"
             VerticalScrollBarVisibility="Auto" />
     </DockPanel>
