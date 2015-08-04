@@ -53,7 +53,7 @@ namespace p2pChat {
                     writer.Write(Icon.Length);
                     writer.Write(Icon, 0, Icon.Length);
                 }
-                return stream.ToArray();
+                return stream.GetBuffer();
             }
         }
 
