@@ -145,7 +145,12 @@ namespace p2pChat {
                 return;
             }
             try {
-                _talker.Talk(textBox_Name.Text + "\t" + textBox_Message.Text);
+                _talker.Talk(new ChatMessage(
+                    ChatMessage.Commands.Say,
+                    textBox_Name.Text,
+                    textBox_Message.Text,
+                    null
+                ));
                 textBox_Message.Text = null;
                 _settings.MyName = textBox_Name.Text;
                 _settings.Save();
@@ -217,22 +222,39 @@ namespace p2pChat {
             if (listener == null) {
                 return;
             }
-            var message = e.Message.SplitTrim(new[] { "\t" });
-            var body = message.LastOrDefault();
-            switch (body) {
-                case ":Now":
-                    e.Response = DateTime.Now.ToString("g");
+            var message = e.Message;
+            var body = message.Body;
+            var response = "";
+            switch (message.Command) {
+                case ChatMessage.Commands.Register:
+                    response = body;
                     break;
-                case ":Me":
-                    e.Response = message.FirstOrDefault();
+                case ChatMessage.Commands.Say:
+                    switch (body) {
+                        case ":Now":
+                            response = DateTime.Now.ToString("g");
+                            break;
+                        case ":Me":
+                            response = message.Sender;
+                            break;
+                        default:
+                            response = body;
+                            break;
+                    }
                     break;
                 default:
-                    e.Response = body;
+                    response = "Invalid message";
                     break;
             }
+            e.Response = new ChatMessage(
+                ChatMessage.Commands.Acknowledge,
+                textBox_Name.Text.ToDefaultIfNullOrEmpty(Dns.GetHostName()),
+                response,
+                null
+            );
             Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
-                new Action(() => ShowMessage(e.Message))
+                new Action(() => ShowMessage(message.Sender + "\t" + body))
             );
         }
     }
