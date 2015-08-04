@@ -66,12 +66,12 @@ namespace p2pChat {
             }
         }
 
-        public void Talk(string message) {
+        public void Talk(ChatMessage message) {
             if (_ns == null || !_ns.CanWrite) {
                 return;
             }
-            var sendBytes = Encoding.UTF8.GetBytes(message + "\r\n\0");
-            _ns.Write(sendBytes, 0, sendBytes.Length);
+            var bytes = message.ToBytes();
+            _ns.Write(bytes, 0, bytes.Length);
         }
 
         private BackgroundWorker CreateWorker() {
@@ -117,10 +117,9 @@ namespace p2pChat {
                     } while (_ns.DataAvailable);
                     message = isDisconnected ?
                         "Disconnected" :
-                        Encoding.UTF8
-                            .GetString(ms.GetBuffer(), 0, (int)ms.Length);
+                        ChatMessage.FromBytes(ms.GetBuffer()).Body;
                 }
-                Message = message.Trim(WhiteSpaces);
+                Message = message;
             }
             catch (Exception ex) {
                 var socketException = ex.InnerException as SocketException;
