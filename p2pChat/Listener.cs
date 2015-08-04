@@ -136,7 +136,7 @@ namespace p2pChat {
                         if (!ns.DataAvailable) {
                             continue;
                         }
-                        var message = "";
+                        ChatMessage message = new ChatMessage();
                         using (var ms = new MemoryStream()) {
                             var receiveBuffer = new byte[BufferSize];
                             do {
@@ -148,15 +148,13 @@ namespace p2pChat {
                                 ms.Write(receiveBuffer, 0, receiveSize);
                             } while (ns.DataAvailable);
                             if (!isDisconnected) {
-                                message = Encoding.UTF8
-                                    .GetString(ms.GetBuffer(), 0, (int)ms.Length);
+                                message = ChatMessage.FromBytes(ms.GetBuffer());
                             }
                         }
-                        var response = this.NotifyMessageReceived(message.Trim(WhiteSpaces));
+                        var response = this.NotifyMessageReceived(message);
                         if (!isDisconnected) {
-                            response = (response ?? "Received: " + message.Length.ToString()) + "\r\n\0";
-                            var sendBuffer = Encoding.UTF8.GetBytes(response);
-                            ns.Write(sendBuffer, 0, sendBuffer.Length);
+                            var bytes = response.ToBytes();
+                            ns.Write(bytes, 0, bytes.Length);
                         }
                     }
                 }
