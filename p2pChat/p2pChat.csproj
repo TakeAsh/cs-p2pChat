@@ -172,10 +172,10 @@
     <Resource Include="Images\Wait.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Blue.png" />
-    <Resource Include="Images\Green.png" />
-    <Resource Include="Images\NoName.png" />
-    <Resource Include="Images\Red.png" />
+    <EmbeddedResource Include="Images\Blue.png" />
+    <EmbeddedResource Include="Images\Green.png" />
+    <EmbeddedResource Include="Images\NoName.png" />
+    <EmbeddedResource Include="Images\Red.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
