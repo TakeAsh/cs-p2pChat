@@ -94,5 +94,17 @@ namespace p2pChat.Properties {
                 this["FontSize"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MyIcon {
+            get {
+                return ((string)(this["MyIcon"]));
+            }
+            set {
+                this["MyIcon"] = value;
+            }
+        }
     }
 }
