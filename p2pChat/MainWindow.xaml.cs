@@ -258,7 +258,7 @@ namespace p2pChat {
             }
             e.Response = new ChatMessage(
                 ChatMessage.Commands.Acknowledge,
-                textBox_Name.Text.ToDefaultIfNullOrEmpty(Dns.GetHostName()),
+                _settings.MyName.ToDefaultIfNullOrEmpty(Dns.GetHostName()),
                 response,
                 null
             );
