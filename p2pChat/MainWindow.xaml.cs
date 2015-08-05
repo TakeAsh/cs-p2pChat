@@ -51,8 +51,13 @@ namespace p2pChat {
             };
         }
 
-        private void ShowMessage(string message) {
-            var image = ResourceHelper.GetEmbeddedImage("Images/NoName.png");
+        private void ShowMessage(string sender, string message) {
+            ChatClient client;
+            var image = String.IsNullOrEmpty(sender) ||
+                !_clients.ContainsKey(sender) ||
+                (client = _clients[sender]) == null ?
+                ResourceHelper.GetEmbeddedImage("Images/NoName.png") :
+                client.Icon;
             if (image != null) {
                 _paragraph.Inlines.Add(new InlineUIContainer(new Image() {
                     Source = image,
@@ -60,7 +65,7 @@ namespace p2pChat {
                     Height = _settings.FontSize, // image.PixelHeight
                 }));
             }
-            _paragraph.Inlines.Add(new Run(message));
+            _paragraph.Inlines.Add(new Run((!String.IsNullOrEmpty(sender) ? sender + "\t" : "") + message));
             _paragraph.Inlines.Add(new LineBreak());
         }
 
@@ -90,7 +95,7 @@ namespace p2pChat {
                     image_ListenStatus.Source = ResourceHelper.GetImage("Images/Play.png");
                 }
                 catch (Exception ex) {
-                    ShowMessage(ex.GetAllMessages());
+                    ShowMessage(null, ex.GetAllMessages());
                 }
             }
         }
@@ -132,7 +137,7 @@ namespace p2pChat {
                 _talker.Talk(new ChatClient(textBox_Name.Text, _settings.MyIcon).ToRegisterMessage());
             }
             catch (Exception ex) {
-                ShowMessage(ex.GetAllMessages());
+                ShowMessage(null, ex.GetAllMessages());
             }
         }
 
@@ -171,7 +176,7 @@ namespace p2pChat {
                 _settings.Save();
             }
             catch (Exception ex) {
-                ShowMessage(ex.Message);
+                ShowMessage(null, ex.Message);
                 Disconnect();
             }
         }
@@ -193,12 +198,12 @@ namespace p2pChat {
                             DispatcherPriority.Background,
                             new Action(() => {
                                 if (connected) {
-                                    ShowMessage("Connect: " + talker.Host + ":" + talker.Port);
+                                    ShowMessage(null, "Connect: " + talker.Host + ":" + talker.Port);
                                     button_Connect.IsEnabled = false;
                                     button_Disconnect.IsEnabled = true;
                                     button_Send.IsEnabled = true;
                                 } else {
-                                    ShowMessage("Disconnect: " + talker.Host + ":" + talker.Port);
+                                    ShowMessage(null, "Disconnect: " + talker.Host + ":" + talker.Port);
                                     button_Connect.IsEnabled = true;
                                     button_Disconnect.IsEnabled = false;
                                     button_Send.IsEnabled = false;
@@ -210,7 +215,7 @@ namespace p2pChat {
                         var message = e.NewValue as string;
                         Dispatcher.BeginInvoke(
                             DispatcherPriority.Background,
-                            new Action(() => ShowMessage(message))
+                            new Action(() => ShowMessage(null, message))
                         );
                         break;
                 }
@@ -222,7 +227,7 @@ namespace p2pChat {
                         var message = e.NewValue as string;
                         Dispatcher.BeginInvoke(
                             DispatcherPriority.Background,
-                            new Action(() => ShowMessage(message))
+                            new Action(() => ShowMessage(null, message))
                         );
                         break;
                 }
@@ -269,7 +274,7 @@ namespace p2pChat {
             );
             Dispatcher.BeginInvoke(
                 DispatcherPriority.Background,
-                new Action(() => ShowMessage(message.Sender + "\t" + body))
+                new Action(() => ShowMessage(message.Sender, body))
             );
         }
     }
