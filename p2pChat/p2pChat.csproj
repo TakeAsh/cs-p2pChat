@@ -93,6 +93,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ChatClient.cs" />
     <Compile Include="ChatMessage.cs" />
     <Compile Include="MessageReceivedEvent.cs" />
     <Compile Include="Talker.cs" />
