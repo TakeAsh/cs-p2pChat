@@ -129,6 +129,7 @@ namespace p2pChat {
                 );
                 _settings.Host = textBox_Host.Text;
                 _settings.Save();
+                _talker.Talk(new ChatClient(textBox_Name.Text, _settings.MyIcon).ToRegisterMessage());
             }
             catch (Exception ex) {
                 ShowMessage(ex.GetAllMessages());
