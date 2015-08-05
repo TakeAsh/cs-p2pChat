@@ -30,6 +30,7 @@ namespace p2pChat {
         private Listener _listenerV6;
         private Talker _talker;
         private Paragraph _paragraph = new Paragraph();
+        private ChatClients _clients = new ChatClients();
 
         public MainWindow() {
             InitializeComponent();
@@ -240,7 +241,7 @@ namespace p2pChat {
             var response = "";
             switch (message.Command) {
                 case ChatMessage.Commands.Register:
-                    response = body;
+                    response = _clients.Register(message);
                     break;
                 case ChatMessage.Commands.Say:
                     switch (body) {
