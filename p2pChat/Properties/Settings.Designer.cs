@@ -106,5 +106,17 @@ namespace p2pChat.Properties {
                 this["MyIcon"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string IconsFolder {
+            get {
+                return ((string)(this["IconsFolder"]));
+            }
+            set {
+                this["IconsFolder"] = value;
+            }
+        }
     }
 }

@@ -50,6 +50,7 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -79,6 +80,14 @@
                 <TextBox
                     x:Name="textBox_MyIcon"
                     Grid.Row="2" Grid.Column="1" />
+                <TextBlock
+                    Text="Icons Folder"
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="4" />
+                <TextBox
+                    x:Name="textBox_IconsFolder"
+                    Grid.Row="3" Grid.Column="1" />
             </Grid>
         </GroupBox>
         <DockPanel
